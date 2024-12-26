@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Page</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            background-color: #8d8686;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Background animation */
+        .background-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .background-animation span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            animation: move 10s linear infinite;
+        }
+
+        @keyframes move {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: #575757;
+        }
+
+        /* Bike List */
+        .bike-list {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            backdrop-filter: grayscale(23px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .bike-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .bike-list li {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            backdrop-filter: sepia(30%);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .bike-list li:hover {
+            background-color: rgb(184, 184, 184);
+        }
+
+        /* Showcase */
+        .showcase {
+            display: none;
+            margin: 0;
+            text-align: center;
+            padding: 1rem;
+            background-color: #222;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .showcase img {
+            max-width: 90%;
+            max-height: 80%;
+            margin: 2rem 0;
+            border-radius: 10px;
+        }
+
+        .showcase h2 {
+            margin-top: 1rem;
+            color: white;
+        }
+
+        /* Back Button */
+        .back-button {
+            display: block;
+            text-align: center;
+            margin: 2rem auto;
+            padding: 0.5rem 1rem;
+            background-color: #91a5ba;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            width: 120px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            filter: drop-shadow(0 0 10px grey);
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .bike-list {
+                max-width: 100%;
+                padding: 1rem;
+            }
+
+            .bike-list li {
+                font-size: 0.9rem;
+                padding: 0.8rem;
+            }
+
+            .showcase img {
+                max-width: 95%;
+                max-height: 75%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar a {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .bike-list {
+                padding: 0.8rem;
+            }
+
+            .bike-list li {
+                font-size: 0.85rem;
+            }
+
+            .showcase h2 {
+                font-size: 1.3rem;
+            }
+
+            .back-button {
+                width: 100px;
+                padding: 0.4rem 1rem;
+            }
+        }
+    </style>
+    <script>
+        const bikes = {
+            bike1: {
+                name: "Bike 1",
+                image: "sports bike.png",
+                sound: "motorcycle-sound-effects-sfx-179535.mp3",
+                features: "A sportbike is a type of motorcycle designed for high performance, agility, and speed, typically featuring a lightweight frame, aerodynamic bodywork, and advanced suspension systems."
+            },
+            bike2: {
+                name: "Bike 2",
+                image: "royal enfield.png",
+                sound: "350cc-bike-firing-32391.mp3",
+                features: "The Royal Enfield Bullet is one of the most iconic motorcycles in the world, with a legacy dating back to 1932."
+            },
+            bike3: {
+                name: "Bike 3",
+                image: "duke.png",
+                sound: "KTM Duke Sound-1-MobCup.vip.mp3",
+                features: "The Duke is a series of sporty motorcycles produced by Austrian manufacturer KTM. Known for their aggressive styling and lightweight design."
+            }
+        };
+
+        let currentAudio = null;
+
+        function selectBike(bikeKey) {
+            const showcase = document.querySelector(".showcase");
+            const bike = bikes[bikeKey];
+
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+
+            showcase.innerHTML = `
+                <img src="${bike.image}" alt="${bike.name}">
+                <h2>${bike.name}</h2>
+                <p>${bike.features}</p>
+                <a href="#" class="back-button" onclick="closeShowcase()">Back</a>
+            `;
+
+            try {
+                currentAudio = new Audio(bike.sound);
+                currentAudio.play();
+            } catch (error) {
+                showcase.innerHTML += `<p style="color: red;">Audio not available.</p>`;
+            }
+
+            showcase.style.display = "block";
+        }
+
+        function closeShowcase() {
+            const showcase = document.querySelector(".showcase");
+            showcase.style.display = "none";
+
+            // Stop the audio when the showcase is closed
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;  // Reset to the start of the audio
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const animationContainer = document.querySelector(".background-animation");
+            for (let i = 0; i < 100; i++) {
+                const span = document.createElement("span");
+                span.style.left = Math.random() * 100 + "%";
+                span.style.top = Math.random() * 100 + "%";
+                span.style.animationDelay = Math.random() * 5 + "s";
+                span.style.animationDuration = Math.random() * 10 + 5 + "s";
+                animationContainer.appendChild(span);
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="background-animation"></div>
+
+    <div class="navbar">
+        <a href="index.html">Home</a>
+    </div>
+
+    <div class="bike-list">
+        <h2>Select a Bike</h2>
+        <ul>
+            <li onclick="selectBike('bike1')">Bike 1</li>
+            <li onclick="selectBike('bike2')">Bike 2</li>
+            <li onclick="selectBike('bike3')">Bike 3</li>
+        </ul>
+    </div>
+
+    <div class="showcase">
+        <p>Select a bike to see its details and hear its sound.</p>
+    </div>
+</body>
+</html>
