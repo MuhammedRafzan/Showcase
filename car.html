@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Page</title>
+    <style>
+        /* Global styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #1e1e1e, #333);
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .background-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .background-animation span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            animation: move 10s linear infinite;
+        }
+
+        @keyframes move {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; }
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #111;
+            padding: 1rem;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: #575757;
+        }
+
+        /* Car List */
+        .car-list {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            backdrop-filter: grayscale(23px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+
+        .car-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .car-list li {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .car-list li:hover {
+            background-color: #444;
+        }
+
+        /* Showcase */
+        .showcase {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.9);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            overflow: auto;
+        }
+
+        .showcase img {
+            max-width: 90%;
+            max-height: 80%;
+            margin: 2rem 0;
+            border-radius: 10px;
+        }
+
+        .showcase h2 {
+            margin-top: 1rem;
+            padding: 0 10px;
+        }
+
+        .back-button {
+            display: block;
+            text-align: center;
+            margin: 2rem auto;
+            padding: 0.5rem 1rem;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            width: 120px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .car-list {
+                max-width: 100%;
+                padding: 1rem;
+            }
+
+            .car-list li {
+                font-size: 0.9rem;
+                padding: 0.8rem;
+            }
+
+            .showcase img {
+                max-width: 95%;
+            }
+
+            .back-button {
+                width: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .car-list {
+                padding: 0.8rem;
+            }
+
+            .car-list li {
+                font-size: 0.85rem;
+                padding: 0.7rem;
+            }
+
+            .showcase h2 {
+                font-size: 1.3rem;
+            }
+
+            .back-button {
+                width: 100px;
+                padding: 0.4rem 1rem;
+            }
+        }
+    </style>
+    <script>
+        const cars = {
+            car1: {
+                name: "Car 1",
+                image: "supra.png",
+                sound: "supra_engine.mp3",
+                features: "Engine: The GR Supra has two engine options: a 2.0-liter 4-cylinder engine and a 3.0-liter 6-cylinder engine. The 3.0-liter engine produces 382 horsepower and 368 lb.-ft. of torque. Transmission: The GR Supra has a 6-speed iMT or 8-speed AT transmission."
+            },
+            car2: {
+                name: "Car 2",
+                image: "nissan.png",
+                sound: "nissan_gtr_gt1.mp3",
+                features: "The Nissan GT1 is a legendary race car that was developed in the 1990s to compete in the 24 Hours of Le Mans. Powered by a 3.0-liter twin-turbo V6 engine, delivering impressive performance."
+            },
+            car3: {
+                name: "Car 3",
+                image: "bmwm5.png",
+                sound: "bmw_e39_m5.mp3",
+                features: "The BMW M5 is a high-performance luxury sedan powered by a 4.4-liter twin-turbo V8 engine, delivering up to 617 horsepower."
+            }
+        };
+
+        let currentAudio = null;
+
+        function selectCar(carKey) {
+            const showcase = document.querySelector(".showcase");
+            const car = cars[carKey];
+
+            showcase.innerHTML = `
+                <img src="${car.image}" alt="${car.name}">
+                <h2>${car.name}</h2>
+                <p>${car.features}</p>
+                <a href="#" class="back-button" onclick="closeShowcase()">Back</a>
+            `;
+
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+
+            currentAudio = new Audio(car.sound);
+            currentAudio.play();
+
+            showcase.style.display = "block";
+        }
+
+        function closeShowcase() {
+            const showcase = document.querySelector(".showcase");
+            showcase.style.display = "none";
+
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const animationContainer = document.querySelector(".background-animation");
+            for (let i = 0; i < 100; i++) {
+                const span = document.createElement("span");
+                span.style.left = Math.random() * 100 + "%";
+                span.style.top = Math.random() * 100 + "%";
+                span.style.animationDelay = Math.random() * 5 + "s";
+                span.style.animationDuration = Math.random() * 10 + 5 + "s";
+                animationContainer.appendChild(span);
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="background-animation"></div>
+
+    <div class="navbar">
+        <a href="index.html">Home</a>
+    </div>
+
+    <div class="car-list">
+        <h2>Select a Car</h2>
+        <ul>
+            <li onclick="selectCar('car1')">Car 1</li>
+            <li onclick="selectCar('car2')">Car 2</li>
+            <li onclick="selectCar('car3')">Car 3</li>
+        </ul>
+    </div>
+
+    <div class="showcase">
+        <p>Select a car to see its details and hear its sound.</p>
+    </div>
+</body>
+</html>
